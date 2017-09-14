@@ -1,0 +1,24 @@
+//snake_f.c
+#include "snake_f.h"
+/************  Initialize sprite  *****************/
+void sprite_init (sprite_t *sprite, SDL_Surface *sprite_picture,
+		  int sprite_size_w, int sprite_size_h, float x,
+		  float y, float vx, float vy, float ax, float ay,
+		  float current_frame, int num_frame){
+  sprite->x=x;
+  sprite->y=y;
+  sprite->ax=ax;
+  sprite->ay=ay;
+  sprite->vx=vx;
+  sprite->vy=vy;
+  sprite->picture=sprite_picture;
+  sprite->size_w=sprite_size_w;
+  sprite->size_h=sprite_size_h;
+  sprite->current_frame=current_frame;
+  sprite->num_frame=num_frame;
+}
+
+/************  Handle the player control  *****************/
+void player_control (SDL_Event event, int *quit){
+
+}

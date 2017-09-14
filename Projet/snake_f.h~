@@ -1,0 +1,29 @@
+#ifndef SNAKE_F_H
+
+#define SNAKE_F_H
+
+#include <SDL.h>
+#include <stdio.h>
+#include <SDL_image.h>
+
+struct Sprite_t
+{
+  float x;
+  float y;
+  float ax;
+  float ay;
+  float vx;
+  float vy;
+  SDL_Surface *picture;
+  int size_h;
+  int size_w;
+  float current_frame;
+  int num_frame;
+};
+
+typedef struct Sprite_t sprite_t;
+
+extern void sprite_init (sprite_t *sprite, SDL_Surface *sprite_picture,
+			 int sprite_size_w, int sprite_size_h, float x,
+			 float y, float vx, float vy, float ax, float ay,
+			 float current_frame, int num_frame
