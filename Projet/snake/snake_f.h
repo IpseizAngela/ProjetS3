@@ -58,18 +58,4 @@ extern void sprite_turn_left(sprite_t *sprite);
 extern void sprite_turn_right(sprite_t *sprite);
 
 /**************  Initialization of list   ****************/
-Liste *initialization()
-{
-liste *L = malloc(sizeof(*L));
-element *elem = malloc(sizeof(*elem));
-
-if (L == NULL || elem == NULL){
-exit(EXIT_FAILURE);
-}
-
-elem->content = 0;
-elem->next = NULL;
-L->first = elem;
-
-return L;
-}
+extern Liste *initialization();
