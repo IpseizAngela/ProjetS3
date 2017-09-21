@@ -9,45 +9,8 @@ int main(){
  
   /*************  Sprite initialize  *************************/
   
-  /*Player*/
-  sprite_t *s_head;
-  sprite_t *s_body;
-  sprite_t *s_tail;
-  liste player;
+  sprite_t Map[SCREEN_HEIGHT][SCREEN_WIDTH];
   
-  /****************  Variable initialize  ********************/
-  
-  /*Position of player*/
-  float head_x = 0.0;
-  float head_y = 0.0;
-  float body_x = ;
-  /*Acceleration of player*/
-  float ax = 0.0;
-  float ay = 0.0;
-  
-  /*Size of sprite picture*/
-  int snake_w = SNAKE_SIZE_W;
-  int snake_h = SNAKE_SIZE_H;
-
-  /*Total number and the current picture of sprite*/
-  int n_frame = 1;
-  int c_frame = 1;
-  
-  /*End of game*/
-  bool gameover = false;
-
-  /*Score of player*/
-  int *score = 0;
-  
-  /* Table of char to print the score */
-  //char score_tab[60] = "Score : ";
-  //char gameover_tab[60] = "Gameover";
-  
-  /****************  Initialize of SDL  ***************/
-
-  SDL_Surface *screen, *temp, *snake_pic, *background;
-  /*background of a picture*/
-  int colorkey;
 
   /* initialize SDL */
   SDL_Init(SDL_INIT_VIDEO);
@@ -121,10 +84,3 @@ int main(){
   TTF_CloseFont(font_gameover);*/
 }
 
-
-
-
-
-
-/*Tableau/file capturant toutes les positions lorsque la tete change de "dir" et lorsque la queue touche cette position on l'efface*/
-/*carte = tableau d'entier la case tete=1, corps=2, 

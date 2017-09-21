@@ -58,3 +58,49 @@ void sprite_turn_right(sprite_t *sprite){
     sprite->current_frame += sprite->num_frame;
   }
 }
+
+/**************  Initialization of list   ****************/
+liste Init(){
+  liste *L = malloc(sizeof(*L));/*Allocation of memory for a list*/
+  element *elem = malloc(sizeof(*elem));/*Allocation of memory for 
+					  the first element*/
+  if (L == NULL || elem == NULL){/*Look if the allocation work*/
+    exit(EXIT_FAILURE);
+  }
+  elem->content = 0;
+  elem->next = NULL;
+  L->first = elem;
+  return L;
+}
+
+/********  Insertion of a element in the list  ********/
+liste insert(liste L, int elem){
+  element *new = malloc(sizeof(*new));
+  if (new == NULL){/*Look if the allocation work*/
+    exit(EXIT_FAILURE);
+  }
+  new->content = elem;
+  new->next = L->first;/*new pointed on the first element of the list*/
+  L->first = new;/*new become the first element*/
+}
+
+/*********  Delete the first element of the list  *********/
+liste delete(liste L){
+  if (L == NULL){
+    exit(EXIT_FAILURE);
+  }else{
+    element *del = L->first;
+    L->first = liste->first->next;/*The second element of the list 
+				    become the first element */
+    free(del);
+  }
+}
+
+/*********************  Delete the list  ********************/
+liste eraseL(liste L){
+  Bool last = False;
+  del
+  while (L->first != NULL){
+    while (!last){
+      element *del = L->
+	
