@@ -10,6 +10,8 @@ int main(){
   /*************  Sprite initialize  *************************/
   
   int Map[SCREEN_HEIGHT][SCREEN_WIDTH];
+  for (i=0;i<SCREEN_HEIGHT;i++){
+	  
   
 
   /* initialize SDL */
