@@ -29,9 +29,9 @@ void HandleEvent(SDL_Event event, int *quit,  SDL_Rect *position, bool *throw, o
       break;
     case SDLK_SPACE:
       if (!*throw) {
-	ball -> x = 800;
+	ball -> x = 50;
 	ball -> y = 750;
-	ball -> speed_x = -0.2;
+	ball -> speed_x = 0.2;
 	ball -> speed_y = 0;
 	*throw = true;
       } 

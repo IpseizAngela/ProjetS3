@@ -29,9 +29,9 @@ void HandleEvent(SDL_Event event, int *quit,  SDL_Rect *position, bool *throw, o
       break;
     case SDLK_SPACE:
       if (!*throw) {
-	ball -> x = 200;
-	ball -> y = 10;
-	ball -> speed_x = 0.2;
+	ball -> x = 800;
+	ball -> y = 750;
+	ball -> speed_x = -0.2;
 	ball -> speed_y = 0;
 	*throw = true;
       } 
@@ -467,18 +467,20 @@ bool collide_table_aux (object_breakout *table , int *n, object_breakout *ball, 
   return exit2;
 }
 
-/*void collide_platform (object_breakout *plat, object_breakout *ball, SDL_PixelFormat *format){
+void collide_platform (object_breakout *plat, object_breakout *ball, SDL_PixelFormat *format){
   int cx,cy;
   if (collide_precise(ball, plat, format, &cx,&cy)){
-      if (ball -> x < plat -> x + plat -> width/2){ 
-	if (plat -> y <= cy){
-	  ball -> speed_y = - 1.5;
-	}
+    if (ball -> x < plat -> x + plat -> width){ 
+      if (plat -> y <= cy){
+	printf("b");
+	ball -> speed_y =  1.5;
       }
-      else if (ball -> x + ball -> width/2 < ball -> x){
-	if (plat -> y <= cy){
-	  ball -> speed_y = 1.5;
-	}
+    }
+    else if (ball -> x + ball -> width/2 < ball -> x){
+      if (plat -> y <= cy){
+	printf("a");
+	ball -> speed_y = -1.5;
       }
+    }
   }     
-  }*/
+}
