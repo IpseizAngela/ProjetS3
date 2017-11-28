@@ -1257,10 +1257,10 @@ void del (object_breakout *tab, int *n, int cur){
 void power (object_breakout *reduc, int *n, SDL_Surface *screen, int cx, int cy)
 {
   int lucky = nb_random();
-  //if (lucky == REDUC){
+  if (lucky == REDUC){
     add(reduc, n, cx, cy, screen,REDUC);
     *n = *n + 1;
-    //}
+  }
    
 }
 
