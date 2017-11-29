@@ -512,6 +512,13 @@ object_breakout init_object (int type, float x_act, float y_act, SDL_Surface *sc
       object.sprite = load ("reduce.bmp");
       object.n_frame = 1;
       object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+    }else if (object.t_bonus == GROW){
+      object.speed_y = 2;
+      object.width = 17;
+      object.height = 17;
+      object.sprite = load ("grow.bmp");
+      object.n_frame = 1;
+      object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
     }
   }
 
@@ -1245,13 +1252,15 @@ void del (object_breakout *tab, int *n, int cur){
 
 /* Handle the POWER */
 /*reduce the size of the platform*/
-void power (object_breakout *reduc, int *n, SDL_Surface *screen, int cx, int cy)
+void power (object_breakout *power, int *n, SDL_Surface *screen, int cx, int cy)
 {
   int lucky = nb_random();
   //if (lucky == REDUC){
-    add(reduc, n, cx, cy, screen,REDUC);
+  //add(reduc, n, cx, cy, screen,REDUC);
+    //*n = *n + 1;
+    //}else if (lucky == GROW){
+    add(power, n, cx, cy, screen,GROW);
     *n = *n + 1;
-    //}
 }
 
 
@@ -1276,14 +1285,21 @@ void collide_power (object_breakout *platform, object_breakout *power,SDL_Surfac
   float x=0 ,y=0;
   int i;
   for (i=0; i<*n; i++){
-    if (power[i].t_bonus == REDUC){
-      if (collide_precise(&power[i], platform, screen->format,&x,&y)){
+    if (collide_precise(&power[i], platform, screen->format,&x,&y)){
+      if (power[i].t_bonus == REDUC){
 	platform -> width = 32;
 	platform -> sprite = load("LittlePlatform.bmp");
 	set_colorkey(screen, 255, 0, 255, platform->sprite);
 	power[i].counter = TIME_REDUCE;
-	power[i].print = false;
-      }
+      }else if (power[i].t_bonus == GROW){
+	  platform -> width = 128;
+	  platform->picture.w = platform->width;
+	  printf("platform -> width = %d \n",platform -> width);
+	  platform -> sprite = load("BigPlatform.bmp");
+	  set_colorkey(screen, 255, 0, 255, platform->sprite);
+	  power[i].counter = TIME_GROW;
+	}
+      power[i].print = false;
     }
   } 
 }
@@ -1295,7 +1311,7 @@ void power_time (object_breakout *platform, object_breakout *tab, int *n, SDL_Su
     if (! tab[i].print){
       tab[i].counter = tab[i].counter - 1;
       if (tab[i].counter <= 0){
-	if (tab[i].t_bonus == REDUC){
+	if ((tab[i].t_bonus == REDUC) || (tab[i].t_bonus == GROW)){
 	  del(&tab[i],n,i);
 	  platform -> width = 64;
 	  platform -> sprite = load("NormalPlatform.bmp");

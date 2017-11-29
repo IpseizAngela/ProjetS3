@@ -507,8 +507,8 @@ object_breakout init_object (int type, float x_act, float y_act, SDL_Surface *sc
     object.print = true;
     if (object.t_bonus == REDUC){
       object.speed_y = 2;
-      object.width = 16;
-      object.height = 16;
+      object.width = 17;
+      object.height = 17;
       object.sprite = load ("reduce.bmp");
       object.n_frame = 1;
       object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);

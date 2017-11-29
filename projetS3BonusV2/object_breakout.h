@@ -54,8 +54,10 @@
 
 /*Type of the bonus*/
 #define REDUC 1
+#define GROW  2
 /*Duration of the bonus when it was activated*/
-#define TIME_REDUCE 5
+#define TIME_REDUCE 50
+#define TIME_GROW  10
 
 #define SPEEDX 5
 #define SPEEDY 5
@@ -208,7 +210,7 @@ void add (object_breakout *tab, int *n, int cx, int cy, SDL_Surface *screen, int
 void move_power (object_breakout *reduc, int *n);
 
 /*reduce the size of the platform*/
-void power (object_breakout *reduc, int *n, SDL_Surface *screen, int cx, int cy);
+void power (object_breakout *power, int *n, SDL_Surface *screen, int cx, int cy);
 
 /*delete an element in an array*/
 void del (object_breakout *tab, int *n, int cur);
