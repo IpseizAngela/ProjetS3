@@ -52,7 +52,10 @@
 
 #define NB_BONUS_IN_SAME_TIME 15
 
+/*Type of the bonus*/
 #define REDUC 1
+/*Duration of the bonus when it was activated*/
+#define TIME_REDUCE 5
 
 #define SPEEDX 5
 #define SPEEDY 5
@@ -81,6 +84,7 @@ struct objectBreakout
   int score;   //the score of the object (only for the ball)
   int life;      //the number of life (only for the ball too)
   int t_bonus;    //Give the type of the bonus
+  bool print;     //Use for the bonus to know if we print it or not
 };
 
 
@@ -215,4 +219,8 @@ int nb_random ();
 
 /*******  handle the collide between bonus and platform  *************/
 void collide_power (object_breakout *platform, object_breakout *power,SDL_Surface *screen, int *n);
+
+/*Handle the bonus time*/
+void power_time (object_breakout *platform, object_breakout *tab, int *n, SDL_Surface *screen);
+
 #endif

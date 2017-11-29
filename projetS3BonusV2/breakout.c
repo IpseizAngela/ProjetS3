@@ -138,10 +138,12 @@ int main(int argc, char* argv[])
 	object_breakout tab_bonus [NB_BONUS_IN_SAME_TIME];
 	float cx = 0;
 	float cy = 0;
-	bool blit_bonus = collide_table (tab_brick, &nbI, &nbII, &nbIII, &nbIV, &nbV, &nbVI, &nbVII, &ball, screen -> format, NB_BRICKS, &cx, &cy);  
+	bool blit_bonus = false;
+	blit_bonus = collide_table (tab_brick, &nbI, &nbII, &nbIII, &nbIV, &nbV, &nbVI, &nbVII, &ball, screen -> format, NB_BRICKS, &cx, &cy);  
 	
 	if (blit_bonus) {
 	  power (tab_bonus, &nb_bonus, screen, cx, cy);
+	  blit_bonus = false;
 	}
 	
 	collide_platform (&platform, &ball, screen->format); 
@@ -159,10 +161,14 @@ int main(int argc, char* argv[])
         print_tab(tab_brick[6], nbVII, screen);
 	print_object (&platform, screen);
 	print_object (&ball, screen);
+
+	collide_power (&platform, tab_bonus, screen,&nb_bonus);
+	move_power (tab_bonus, &nb_bonus);
+	power_time (&platform, tab_bonus, &nb_bonus, screen);
 	for (i=0; i<nb_bonus; i++) {
-	  collide_power(&platform, &tab_bonus, screen,&nb_bonus);
-	  move_power (tab_bonus, &nb_bonus);
-	  print_object(&tab_bonus[i], screen);
+	  if (tab_bonus[i].print){
+	    print_object(&tab_bonus[i], screen);
+	  }
 	}
 	
 	/* draw the text on the screen */

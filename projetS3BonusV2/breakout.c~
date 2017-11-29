@@ -160,6 +160,7 @@ int main(int argc, char* argv[])
 	print_object (&platform, screen);
 	print_object (&ball, screen);
 	for (i=0; i<nb_bonus; i++) {
+	  collide_power(&platform, &tab_bonus, screen,&nb_bonus);
 	  move_power (tab_bonus, &nb_bonus);
 	  print_object(&tab_bonus[i], screen);
 	}

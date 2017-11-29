@@ -213,4 +213,6 @@ void del (object_breakout *tab, int *n, int cur);
 /* Gives a random number between two ends */
 int nb_random ();
 
+/*******  handle the collide between bonus and platform  *************/
+void collide_power (object_breakout *platform, object_breakout *power,SDL_Surface *screen, int *n);
 #endif
