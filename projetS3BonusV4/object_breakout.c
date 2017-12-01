@@ -539,36 +539,55 @@ object_breakout init_object (int type, float x_act, float y_act, SDL_Surface *sc
         object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
 
     } else if (object.t_bonus == SCORE) {
-        object.speed_y = 2;
-        object.width = 17;
-        object.height = 17;
-        object.sprite = load ("score.bmp");
-        object.n_frame = 1;
-        object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+      object.speed_y = 2;
+      object.width = 17;
+      object.height = 17;
+      object.sprite = load ("score.bmp");
+      object.n_frame = 1;
+      object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+      
+    } else if (object.t_bonus == BOUNCE){
+      object.speed_y = 2;
+      object.width = 17;
+      object.height = 17;
+      object.sprite = load ("bounce.bmp");
+      object.n_frame = 1;
+      object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+
     } else if (object.t_bonus == MULTI) {
-	object.speed_y = 2;
-        object.width = 17;
-        object.height = 17;
-        object.sprite = load ("multiball.bmp");
-        object.n_frame = 1;
-        object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+      object.speed_y = 2;
+      object.width = 17;
+      object.height = 17;
+      object.sprite = load ("multiball.bmp");
+      object.n_frame = 1;
+      object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+
+    } else if (object.t_bonus == CROSS){
+      object.cross = false;
+      object.speed_y = 2;
+      object.width = 17;
+      object.height = 17;
+      object.sprite = load ("cross.bmp");
+      object.n_frame = 1;
+      object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+      
     } else if (object.t_bonus == MIN) {
-	object.speed_y = 2;
-        object.width = 17;
-        object.height = 17;
-        object.sprite = load ("min.bmp");
-        object.n_frame = 1;
-        object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+      object.speed_y = 2;
+      object.width = 17;
+      object.height = 17;
+      object.sprite = load ("min.bmp");
+      object.n_frame = 1;
+      object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+      
     } else if (object.t_bonus == SLOW_BALL) {
-	object.speed_y = 2;
-        object.width = 17;
-        object.height = 17;
-        object.sprite = load ("slow_ball.bmp");
-        object.n_frame = 1;
-        object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+      object.speed_y = 0.1;
+      object.width = 17;
+      object.height = 17;
+      object.sprite = load ("slow_ball.bmp");
+      object.n_frame = 1;
+      object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
     }
   }
-
   
   set_colorkey(screen, 255, 0, 255, object.sprite);
   object.picture.x = 0;
@@ -596,10 +615,10 @@ void print_tab (object_breakout *table, int nb, SDL_Surface *screen) {
 
 
 /********  make move the ball ************/
-void move_ball (object_breakout *ball, int *nb, object_breakout *platform, SDL_Surface *screen, bool *throw){
+void move_ball (object_breakout *ball, int *nb_ball, object_breakout *platform, object_breakout *power, int *nb_power, SDL_Surface *screen, bool *throw){
   int i;
 //   printf("speed x %f, speed y %f\n", ball[i].speed_x, ball[i].speed_y);
-  for (i=0; i<*nb; i++) {
+  for (i=0; i<*nb_ball; i++) {
     if (!ball[i].activate) {
       ball[i].x += ball[i].speed_x;
       ball[i].y += ball[i].speed_y;
@@ -612,36 +631,45 @@ void move_ball (object_breakout *ball, int *nb, object_breakout *platform, SDL_S
       
       
     if (ball[i].x   <  0 ) {
-      rebond(&ball[i], 0);
+      rebond(&ball[i], 0, true);
     }
     if (ball[i].x   > SCREEN_WIDTH - ball[i].width) {
-      rebond(&ball[i], 0);
+      rebond(&ball[i], 0, true);
     }
     if (ball[i].y  <  0) {
-      rebond(&ball[i], 1);
+      rebond(&ball[i], 1, true);
     }
     if (ball[i].y > SCREEN_HEIGHT - ball[i].height) {
-      int life = ball[i].life;
-      int score = ball[i].score;
-      //printf("n = %d\n", *nb);
-      if (*nb <= 1) {
-	*platform =  init_object (PLAT,(SCREEN_WIDTH - PLATFORM_WIDTH) / 2, 
+      if (! ball[i].activate){
+	int life = ball[i].life;
+	int score = ball[i].score;
+	//printf("n = %d\n", *nb_ball);
+	if (*nb_ball <= 1) {
+	  *platform =  init_object (PLAT,(SCREEN_WIDTH - PLATFORM_WIDTH) / 2, 
 				    SCREEN_HEIGHT - (2 * PLATFORM_HEIGHT),
 				    screen, -1);
-      
- 
-     
+	  
+	  
+	  
 	  ball[i] = init_object (BALL, platform -> position.x + 
-			(PLATFORM_WIDTH / 3), platform -> position.y -      
-			(PLATFORM_HEIGHT), screen, -1);
+				 (PLATFORM_WIDTH / 3), platform -> position.y -      
+				 (PLATFORM_HEIGHT), screen, -1);
 	  *throw = false;
-	
-	ball[i].life = life - 1;
-	ball[i].score = score;
-      } else {
-	//printf("in\n");
-	del (ball, nb, i);
+	  
+	  ball[i].life = life - 1;
+	  ball[i].score = score;
+	  int j;
+	  int nb_bonus = *nb_power; //because nb_power will be modify
+	  for (j=0; j < nb_bonus;j++){
+	    del(&power[j],nb_power,j);
+	  }
+	} else {
+	  //printf("in\n");
+	del (ball, nb_ball, i);
 	ball[0].score += score;
+	}
+      }else {
+	rebond(&ball[i], 1 , true);
       }
     }
   }
@@ -714,15 +742,15 @@ void read_table (object_breakout **table, char **tab_data, float *x, float  *y,
 
 
 /*** make a rebond on the ball *****/
-void rebond (object_breakout *ball, int side){
-    
-  if (side == 1) { 
-    ball->speed_y = - ball -> speed_y ;
+void rebond (object_breakout *ball, int side, bool collide_screen){
+  if (!ball -> cross || collide_screen){ 
+    if (side == 1) { 
+      ball->speed_y = - ball -> speed_y ;
+    }
+    if (side == 0) { 
+      ball->speed_x = - ball -> speed_x;
+    }
   }
-  if (side == 0) { 
-    ball->speed_x = - ball -> speed_x;
-  }
-  
 }
 
 
@@ -867,12 +895,12 @@ bool collide_table_aux (object_breakout *table , int *n, object_breakout *ball, 
 	h =( *v - pas <= table[i].y) && (table[i].y <= *v + pas);
 	b = table[i].y + table[i].height >= *v;
 	if (b || h) {
-	  rebond (&ball[k], 1);
+	  rebond (&ball[k], 1, false);
 	  col = true;
 	  exit2 = true;
 	}
 	if (g || d)  {
-	  rebond (&ball[k], 0);
+	  rebond (&ball[k], 0, false);
 	  col = true;
 	  exit2 = true;
 	}
@@ -941,7 +969,7 @@ void collide_platform (object_breakout *plat, object_breakout *ball, int nb, SDL
 	}
       } 
       else if (g || d) {
-	rebond(&ball[i], 0);
+	rebond(&ball[i], 0, false);
       }
     } 
   }
@@ -1326,24 +1354,29 @@ void del (object_breakout *tab, int *n, int cur){
 /*reduce the size of the platform*/
 void power (object_breakout *power, int *n, SDL_Surface *screen, int cx, int cy)
 {
-  /*int lucky = nb_random();
+  int lucky = SLOW_BALL; //nb_random();
   if (lucky == REDUC){
     add(power, n, cx, cy, screen,REDUC);
-    }else if (lucky == GROW){
+  }else if (lucky == GROW){
     add(power, n, cx, cy, screen,GROW);
-    } else if (luck == LOST) {
-        add (power, n, cx, cy, screen, LOST);
-    } else if (luck == LIFE) { 
-        add (power, n, cx, cy, screen, LIFE);
-    } else if (luck == SCORE) { 
-        add (power, n, cx, cy, screen, SCORE);
-    } else if (luck == MULTI) { 
-        add (power, n, cx, cy, screen, MULTI);
-     } else if (luck == MIN) { 
-        add (power, n, cx, cy, screen, MIN);
-     } else if (luck == SLOW_BALL) { */
-        add (power, n, cx, cy, screen, SLOW_BALL);
-//      } 
+  } else if (lucky == LOST) {
+    add (power, n, cx, cy, screen, LOST);
+  } else if (lucky == LIFE) { 
+    add (power, n, cx, cy, screen, LIFE);
+  } else if (lucky == SCORE) { 
+    add (power, n, cx, cy, screen, SCORE);
+  }else if (lucky == BOUNCE){
+    add(power, n, cx, cy, screen,BOUNCE);
+  } else if (lucky == MULTI) { 
+    add (power, n, cx, cy, screen, MULTI);
+  }else if (lucky == CROSS){
+    add(power, n, cx, cy, screen,CROSS);
+  } else if (lucky == MIN) { 
+    add (power, n, cx, cy, screen, MIN);
+  } else if (lucky == SLOW_BALL) { 
+    add (power, n, cx, cy, screen, SLOW_BALL);
+  } 
+
 }
 
 
@@ -1390,26 +1423,31 @@ void collide_power (object_breakout *platform, object_breakout *power,
 	    ball[0].life += 1;
 	    del (power, n, i);
 	} else if (power[i].t_bonus == SCORE) {
-	    ball[0].score += 10;
-	    del (power, n, i);
+	  ball[0].score += 10;
+	  del (power, n, i);
+	}else if (power[i].t_bonus == BOUNCE){
+	  power[i].counter = TIME_BOUNCE;
+	  ball -> activate = true;
 	} else if (power[i].t_bonus == MULTI) {
- 	    if (*nb_ball < 2) {
-	      ball[*nb_ball] = init_object (BALL, ball[0].x, ball[0].y, screen, -1);
-	      ball[*nb_ball].speed_x = ball[0].speed_x;
-	      ball[*nb_ball].speed_y = -ball[0].speed_y;
-	      ball[*nb_ball].life = ball[0].life;
-	      ball[*nb_ball].score = 0;
-	      *nb_ball += 1;
-	    }
-	    del (power, n, i);
+	  if (*nb_ball < 2) {
+	    ball[*nb_ball] = init_object (BALL, ball[0].x, ball[0].y, screen, -1);
+	    ball[*nb_ball].speed_x = ball[0].speed_x;
+	    ball[*nb_ball].speed_y = -ball[0].speed_y;
+	    ball[*nb_ball].life = ball[0].life;
+	    ball[*nb_ball].score = 0;
+	    *nb_ball += 1;
+	  }
+	  del (power, n, i);
+	} else if ( power[i].t_bonus == CROSS){
+	  power[i].counter = TIME_CROSS;
+	  ball -> cross = true;
 	} else if (power[i].t_bonus == MIN) {
 	  ball[0].score -= 5;
 	  del (power, n, i);
 	} else if (power[i].t_bonus == SLOW_BALL) {
 	  power[i].counter = TIME_SLOW_BALL;
 	  for (k=0; k<*nb_ball; k++) {
-	    ball[k].activate = true;
-	    
+	    ball[k].activate = true;	    
 	  }
 	}
       }
@@ -1433,12 +1471,18 @@ void power_time (object_breakout *platform, object_breakout *ball, int nb_ball, 
 	  platform -> sprite = load("NormalPlatform.bmp");
 	  set_colorkey(screen, 255, 0, 255, platform->sprite);
 	}
-	if (tab[i].t_bonus == SLOW_BALL) {
+         if (tab[i].t_bonus == SLOW_BALL) {
 	  printf("in\n");
 	  del(&tab[i],n,i);
 	  for (k=0; k<nb_ball; k++) {
 	    ball[k].activate = false;
 	  }
+	}  if (tab[i].t_bonus == BOUNCE){
+	  del(&tab[i],n,i);
+	  ball -> activate = false;
+	} if ( tab[i].t_bonus == CROSS){
+	  del(&tab[i],n,i);
+	  ball -> cross = false;
 	}
       }
     }

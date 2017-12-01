@@ -117,16 +117,6 @@ int main(int argc, char* argv[])
 	
 	move_plat (&platform);
 	
-	/* if we don't have throw the ball, we put it in the middle of the platform
-	* else we move the ball */
-	if (!throw) {
-	    ball[0].x =  platform.position.x + (PLATFORM_WIDTH / 3);
-	    ball[0].position.x = ball[0].x;
-	} 
-	else {
-	    move_ball (ball, &nb_ball, &platform, screen, &throw);
-	}
-
 	/* collide with edges of screen */
 	collide_screen (&platform);
 	    
@@ -165,12 +155,21 @@ int main(int argc, char* argv[])
 	  print_object (&ball[i], screen);
 	}
 	for (i=0; i<nb_bonus; i++) {
-	  //if (!tab_bonus[i].activate){
+	  if (!tab_bonus[i].activate){
 	    print_object(&tab_bonus[i], screen);
-	 // }
+	  }
 	}
 
-	
+	/* if we don't have throw the ball, we put it in the middle of the platform
+	 * else we move the ball */
+	if (!throw) {
+	  ball[0].x =  platform.position.x + (PLATFORM_WIDTH / 3);
+	  ball[0].position.x = ball[0].x;
+	} 
+	else {
+	  move_ball (ball, &nb_ball, &platform, tab_bonus, &nb_bonus, screen, &throw);
+	}
+
 	/* draw the text on the screen */
 	score = 0;
 	print_text ("Life : ", ball[0].life, screen, 0, 25, 20, 0);

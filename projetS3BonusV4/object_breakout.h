@@ -58,7 +58,9 @@
 #define LOST  3
 #define LIFE   4
 #define SCORE  5
+#define BOUNCE 6
 #define MULTI  7
+#define CROSS 8
 #define MIN 9  
 #define SLOW_BALL 10
 
@@ -66,6 +68,8 @@
 #define TIME_REDUCE 50
 #define TIME_GROW  50
 #define TIME_SLOW_BALL 100
+#define TIME_BOUNCE  100
+#define TIME_CROSS  1000
 
 
 #define SPEEDX 2
@@ -96,6 +100,7 @@ struct objectBreakout
   int life;      //the number of life (only for the ball too)
   int t_bonus;    //Give the type of the bonus
   bool activate;     //Use for the bonus 
+  bool cross;        //Use for the cross bonus
 };
 
 
@@ -157,13 +162,13 @@ object_breakout init_object (int type, float x_act, float y_act, SDL_Surface *sc
 void print_tab (object_breakout *table, int nb,  SDL_Surface *screen);
 
 /********  make move the ball ************/
-void move_ball (object_breakout *ball, int *nb, object_breakout *platform, SDL_Surface *screen, bool *throw);
+void move_ball (object_breakout *ball,int *nb_ball, object_breakout *platform, object_breakout *power, int *nb_power, SDL_Surface *screen, bool *throw);
 
 /* Collide between 2 objects */
 bool collide(object_breakout *sprite1, object_breakout *sprite2);
 
 /*** make a rebond on the ball *****/
-void rebond (object_breakout *balle, int side);
+void rebond (object_breakout *ball, int side, bool collide_screen);
 
 /***** read the data table to put them on an other table for the gestion of the bricks ****/
 void read_table (object_breakout **table, char** tab_data, float *x, float  *y, int row, int col, 

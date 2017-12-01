@@ -54,13 +54,28 @@
 
 /*Type of the bonus*/
 #define REDUC 1
+#define GROW  2
+#define LOST  3
+#define LIFE   4
+#define SCORE  5
+#define BOUNCE 6
+#define MULTI  7
+#define CROSS 8
+#define MIN 9  
+#define SLOW_BALL 10
+
 /*Duration of the bonus when it was activated*/
-#define TIME_REDUCE 5
+#define TIME_REDUCE 50
+#define TIME_GROW  50
+#define TIME_SLOW_BALL 100
+#define TIME_BOUNCE  100
+#define TIME_CROSS  1000
 
-#define SPEEDX 5
-#define SPEEDY 5
 
-#define ALEA 10
+#define SPEEDX 2
+#define SPEEDY 2
+
+#define ALEA 20
 
 
 /********* Définition de la structure ********************/
@@ -84,7 +99,8 @@ struct objectBreakout
   int score;   //the score of the object (only for the ball)
   int life;      //the number of life (only for the ball too)
   int t_bonus;    //Give the type of the bonus
-  bool print;     //Use for the bonus to know if we print it or not
+  bool activate;     //Use for the bonus 
+  bool cross;        //Use for the cross bonus
 };
 
 
@@ -146,13 +162,13 @@ object_breakout init_object (int type, float x_act, float y_act, SDL_Surface *sc
 void print_tab (object_breakout *table, int nb,  SDL_Surface *screen);
 
 /********  make move the ball ************/
-void move_ball (object_breakout *ball, object_breakout *platform, SDL_Surface *screen, bool *throw);
+void move_ball (object_breakout *ball, object_breakout *platform, object_breakout *power, int *n, SDL_Surface *screen, bool *throw);
 
 /* Collide between 2 objects */
 bool collide(object_breakout *sprite1, object_breakout *sprite2);
 
 /*** make a rebond on the ball *****/
-void rebond (object_breakout *balle, int side);
+void rebond (object_breakout *balle, int side, bool collide_screen);
 
 /***** read the data table to put them on an other table for the gestion of the bricks ****/
 void read_table (object_breakout **table, char** tab_data, float *x, float  *y, int row, int col, 
@@ -163,14 +179,14 @@ bool collide_precise (object_breakout *sprite1, object_breakout *sprite2, SDL_Pi
 
 /*** look if we are a collision in a table ***/
 bool collide_table (object_breakout ** table, int *n, int *m, int *l, int *p,
-		    int *q, int *r, int *s, object_breakout *ball,
+		    int *q, int *r, int *s, object_breakout *ball, int nb_ball,
 		    SDL_PixelFormat *format, int nbtype, float *cx, float *cy);
 
 /***** look if we are a collision between a brick and the ball into the table ******/
-bool collide_table_aux (object_breakout *table , int *n, object_breakout *ball, SDL_PixelFormat *format, int type, float *u, float *v);
+bool collide_table_aux (object_breakout *table , int *n, object_breakout *ball, int nb_ball, SDL_PixelFormat *format, int type, float *u, float *v);
 
 /**** loke if we are a collision between the platform and the ball ******/
-void collide_platform (object_breakout *plat, object_breakout *ball, SDL_PixelFormat *format);
+void collide_platform (object_breakout *plat, object_breakout *ball, int nb, SDL_PixelFormat *format);
 
 /******* look if there is a collision between the platform and the edges of the screen ********/
 void collide_screen (object_breakout *platform);
@@ -208,7 +224,7 @@ void add (object_breakout *tab, int *n, int cx, int cy, SDL_Surface *screen, int
 void move_power (object_breakout *reduc, int *n);
 
 /*reduce the size of the platform*/
-void power (object_breakout *reduc, int *n, SDL_Surface *screen, int cx, int cy);
+void power (object_breakout *power, int *n, SDL_Surface *screen, int cx, int cy);
 
 /*delete an element in an array*/
 void del (object_breakout *tab, int *n, int cur);
@@ -218,9 +234,10 @@ void del (object_breakout *tab, int *n, int cur);
 int nb_random ();
 
 /*******  handle the collide between bonus and platform  *************/
-void collide_power (object_breakout *platform, object_breakout *power,SDL_Surface *screen, int *n);
+void collide_power (object_breakout *platform, object_breakout *power, 
+                    object_breakout *ball, int *nb_ball, SDL_Surface *screen, int *n, int *gameover);
 
 /*Handle the bonus time*/
-void power_time (object_breakout *platform, object_breakout *tab, int *n, SDL_Surface *screen);
+void power_time (object_breakout *platform, object_breakout *ball, int nb_ball, object_breakout *tab, int *n, SDL_Surface *screen);
 
 #endif

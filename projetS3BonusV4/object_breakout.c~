@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#define SPRITE_STEP 5
+#define SPRITE_STEP 10
 
 
 
@@ -504,7 +504,8 @@ object_breakout init_object (int type, float x_act, float y_act, SDL_Surface *sc
     
   if (type == BONUS){
     object.t_bonus = type_bonus;
-    object.print = true;
+    object.activate = false;
+    
     if (object.t_bonus == REDUC){
       object.speed_y = 2;
       object.width = 17;
@@ -512,6 +513,59 @@ object_breakout init_object (int type, float x_act, float y_act, SDL_Surface *sc
       object.sprite = load ("reduce.bmp");
       object.n_frame = 1;
       object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+      
+    }else if (object.t_bonus == GROW){
+      object.speed_y = 2;
+      object.width = 17;
+      object.height = 17;
+      object.sprite = load ("grow.bmp");
+      object.n_frame = 1;
+      object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+      
+    }else if (object.t_bonus == LOST) {
+      object.speed_y = 2;
+      object.width = 17;
+      object.height = 17;
+      object.sprite = load ("lost.bmp");
+      object.n_frame = 1;
+      object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+      
+    } else if (object.t_bonus == LIFE) {
+        object.speed_y = 2;
+        object.width = 17;
+        object.height = 17;
+        object.sprite = load ("life.bmp");
+        object.n_frame = 1;
+        object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+
+    } else if (object.t_bonus == SCORE) {
+        object.speed_y = 2;
+        object.width = 17;
+        object.height = 17;
+        object.sprite = load ("score.bmp");
+        object.n_frame = 1;
+        object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+    } else if (object.t_bonus == MULTI) {
+	object.speed_y = 2;
+        object.width = 17;
+        object.height = 17;
+        object.sprite = load ("multiball.bmp");
+        object.n_frame = 1;
+        object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+    } else if (object.t_bonus == MIN) {
+	object.speed_y = 2;
+        object.width = 17;
+        object.height = 17;
+        object.sprite = load ("min.bmp");
+        object.n_frame = 1;
+        object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
+    } else if (object.t_bonus == SLOW_BALL) {
+	object.speed_y = 2;
+        object.width = 17;
+        object.height = 17;
+        object.sprite = load ("slow_ball.bmp");
+        object.n_frame = 1;
+        object.colorkey = SDL_MapRGB(screen->format,0, 0, 162);
     }
   }
 
@@ -542,35 +596,54 @@ void print_tab (object_breakout *table, int nb, SDL_Surface *screen) {
 
 
 /********  make move the ball ************/
-void move_ball (object_breakout *ball, object_breakout *platform, SDL_Surface *screen, bool *throw){
-  ball -> x += ball -> speed_x;
-  ball -> y += ball -> speed_y;
-  ball -> position.x = ball -> x;
-  ball -> position.y = ball -> y;
-    
-  if (ball -> x   <  0 ) {
-    rebond(ball, 0);
-  }
-  if (ball -> x   > SCREEN_WIDTH - ball -> width) {
-    rebond(ball, 0);
-  }
-  if (ball -> y  <  0) {
-    rebond(ball, 1);
-  }
-  if (ball -> y > SCREEN_HEIGHT - ball -> height) {
-    int life = ball -> life - 1;
-    int score = ball -> score;
-    *platform =  init_object (PLAT,(SCREEN_WIDTH - PLATFORM_WIDTH) / 2, 
-				  SCREEN_HEIGHT - (2 * PLATFORM_HEIGHT),
-				  screen, -1);
-    
-    *ball = init_object (BALL, platform -> position.x + 
-		      (PLATFORM_WIDTH / 3), platform -> position.y -      
-		      (PLATFORM_HEIGHT), screen, -1);
-    *throw = false;
-    
-    ball -> life = life;
-    ball -> score = score;
+void move_ball (object_breakout *ball, int *nb, object_breakout *platform, SDL_Surface *screen, bool *throw){
+  int i;
+//   printf("speed x %f, speed y %f\n", ball[i].speed_x, ball[i].speed_y);
+  for (i=0; i<*nb; i++) {
+    if (!ball[i].activate) {
+      ball[i].x += ball[i].speed_x;
+      ball[i].y += ball[i].speed_y;
+    }else {
+      ball[i].x += ball[i].speed_x / 10;
+      ball[i].y += ball[i].speed_y / 10;
+    }
+    ball[i].position.x = ball[i].x;
+    ball[i].position.y = ball[i].y;
+      
+      
+    if (ball[i].x   <  0 ) {
+      rebond(&ball[i], 0);
+    }
+    if (ball[i].x   > SCREEN_WIDTH - ball[i].width) {
+      rebond(&ball[i], 0);
+    }
+    if (ball[i].y  <  0) {
+      rebond(&ball[i], 1);
+    }
+    if (ball[i].y > SCREEN_HEIGHT - ball[i].height) {
+      int life = ball[i].life;
+      int score = ball[i].score;
+      //printf("n = %d\n", *nb);
+      if (*nb <= 1) {
+	*platform =  init_object (PLAT,(SCREEN_WIDTH - PLATFORM_WIDTH) / 2, 
+				    SCREEN_HEIGHT - (2 * PLATFORM_HEIGHT),
+				    screen, -1);
+      
+ 
+     
+	  ball[i] = init_object (BALL, platform -> position.x + 
+			(PLATFORM_WIDTH / 3), platform -> position.y -      
+			(PLATFORM_HEIGHT), screen, -1);
+	  *throw = false;
+	
+	ball[i].life = life - 1;
+	ball[i].score = score;
+      } else {
+	//printf("in\n");
+	del (ball, nb, i);
+	ball[0].score += score;
+      }
+    }
   }
 }
 
@@ -744,7 +817,7 @@ bool collide_precise (object_breakout *sprite1, object_breakout *sprite2, SDL_Pi
 
 /*** look if we are a collision in a table ***/
 bool collide_table (object_breakout ** table, int *n, int *m, int *l, int *p,
-		    int *q, int *r, int *s, object_breakout *ball,
+		    int *q, int *r, int *s, object_breakout *ball, int nb_ball,
 		    SDL_PixelFormat *format, int nbtype, float *cx, float *cy) {
   bool exit1 = false;  //put true when we have a collision or we have browse all the table 
   int *k = NULL, i = 0;
@@ -772,97 +845,106 @@ bool collide_table (object_breakout ** table, int *n, int *m, int *l, int *p,
     }
         
     
-    exit1 = collide_table_aux( table[i], k, ball, format, i+1, cx, cy);
+    exit1 = collide_table_aux( table[i], k, ball, nb_ball, format, i+1, cx, cy);
     i++; 
   }
   return exit1;
 }
    
 /***** look if we are a collision between a brick and the ball into the table ******/
-bool collide_table_aux (object_breakout *table , int *n, object_breakout *ball, SDL_PixelFormat *format, int type, float *u, float *v) {
-  bool exit2 = false;
-  int i = 0, j;
+bool collide_table_aux (object_breakout *table , int *n, object_breakout *ball, int nb_ball, SDL_PixelFormat *format, int type, float *u, float *v) {
+  bool exit2 = false, col;
+  int i = 0, j, k;
   int pas = 0.005;
   bool g, d, h, b;
-  while (!exit2 && i < *n) {
-    if (collide_precise (ball, &table[i], format, u, v)) {
-      g = (*u - pas <= table[i].x) && (table[i].x <= *u + pas);
-      d =  table[i].x + table[i].width >= *u ;
-      h =( *v - pas <= table[i].y) && (table[i].y <= *v + pas);
-      b = table[i].y + table[i].height >= *v;
-      if (b || h) {
-	rebond (ball, 1);
-	exit2 = true;
-      }
-       if (g || d)  {
-	rebond (ball, 0);
-	exit2 = true;
-      }
-      
-      if (type != BRICKIV) {
-	table[i].c_frame += 1;
-	if (table[i].c_frame == table[i].n_frame) {
-	  for (j=i; j < *n-1; j++) {
-	    table[j] = table[j+1];
-	  }
-	  *n = *n - 1;
-	  /* increase in score */
-	  if ( (type == BRICKI) || (type == BRICKV) ) {
-	      ball -> score += 1;
-	  }
-	  if ( (type == BRICKII) || (type == BRICKVI) ) {
-	      ball -> score += 3;
-	  }
-	  if  ( (type == BRICKIII) || (type == BRICKVII) ) {
-	      ball -> score += 5;
-	  }
-	 
+  for (k=0; k<nb_ball; k++) {
+    col = false;
+    i = 0;
+    while (!col && i < *n) {
+      if (collide_precise (&ball[k], &table[i], format, u, v)) {
+	g = (*u - pas <= table[i].x) && (table[i].x <= *u + pas);
+	d =  table[i].x + table[i].width >= *u ;
+	h =( *v - pas <= table[i].y) && (table[i].y <= *v + pas);
+	b = table[i].y + table[i].height >= *v;
+	if (b || h) {
+	  rebond (&ball[k], 1);
+	  col = true;
+	  exit2 = true;
 	}
-	else {
-	  table[i].picture.x = table[i].c_frame * table[i].width;
+	if (g || d)  {
+	  rebond (&ball[k], 0);
+	  col = true;
+	  exit2 = true;
+	}
+	
+	if (type != BRICKIV) {
+	  table[i].c_frame += 1;
+	  if (table[i].c_frame == table[i].n_frame) {
+	    for (j=i; j < *n-1; j++) {
+	      table[j] = table[j+1];
+	    }
+	    *n = *n - 1;
+	    /* increase in score */
+	    if ( (type == BRICKI) || (type == BRICKV) ) {
+		ball[k].score += 1;
+	    }
+	    if ( (type == BRICKII) || (type == BRICKVI) ) {
+		ball[k].score += 3;
+	    }
+	    if  ( (type == BRICKIII) || (type == BRICKVII) ) {
+		ball[k].score += 5;
+	    }
+	  
+	  }
+	  else {
+	    table[i].picture.x = table[i].c_frame * table[i].width;
+	  }
 	}
       }
+      i++;
     }
-    i++;
   }
   return exit2;
 }
       
 
 /**** loke if we are a collision between the platform and the ball ******/
-void collide_platform (object_breakout *plat, object_breakout *ball, SDL_PixelFormat *format) {
+void collide_platform (object_breakout *plat, object_breakout *ball, int nb, SDL_PixelFormat *format) {
   
   float mx, my, xa, ya;
   float dist;
   float cx = 0, cy = 0;
   bool g, d, h;
+  int i;
   
-  if (collide_precise(ball, plat, format, &cx, &cy)) {
-    g = plat -> x == cx;
-    d = plat -> x + plat -> width >= cx;
-    h = plat -> y == cy;
-    
-    mx = plat -> x + (plat -> width / 2);
-    my = plat -> y;
-    dist = sqrt( ( (cx - mx) * (cx - mx) ) + ( (cy - my) * (cy - my) ) );
-    
-    if (h) {
-      if (cx > mx){          //collide after the half of the platform
-	xa = cos (2 * M_PI / dist); 
-	ya = -sin (2 * M_PI / dist);
-	ball -> speed_x = xa*SPEEDX;
-	ball -> speed_y = ya*SPEEDY;
-      }else {
-	xa = -cos (2 * M_PI / dist); 
-	ya = -sin (2 * M_PI / dist);
-	ball -> speed_x = xa*SPEEDX;
-	ball -> speed_y = ya*SPEEDY;
+  for (i=0; i<nb; i++) {
+    if (collide_precise(&ball[i], plat, format, &cx, &cy)) {
+      g = plat -> x == cx;
+      d = plat -> x + plat -> width >= cx;
+      h = plat -> y == cy;
+      
+      mx = plat -> x + (plat -> width / 2);
+      my = plat -> y;
+      dist = sqrt( ( (cx - mx) * (cx - mx) ) + ( (cy - my) * (cy - my) ) );
+      
+      if (h) {
+	if (cx > mx){          //collide after the half of the platform
+	  xa = cos (2 * M_PI / dist); 
+	  ya = -sin (2 * M_PI / dist);
+	  ball[i].speed_x = xa*SPEEDX;
+	  ball[i].speed_y = ya*SPEEDY;
+	}else {
+	  xa = -cos (2 * M_PI / dist); 
+	  ya = -sin (2 * M_PI / dist);
+	  ball[i].speed_x = xa*SPEEDX;
+	  ball[i].speed_y = ya*SPEEDY;
+	}
+      } 
+      else if (g || d) {
+	rebond(&ball[i], 0);
       }
     } 
-    else if (g || d) {
-      rebond(ball, 0);
-    }
-  } 
+  }
 }
       
 /******* look if there is a collision between the platform and the edges of the screen ********/
@@ -1119,9 +1201,7 @@ void ranking (SDL_Surface *screen, SDL_Surface *background, int score_player, in
     sc_f = atoi (score_f);
     sc_s = atoi (score_s);
     sc_t = atoi (score_t);
-    printf("second %s\n",second);
     if ( (score_player > sc_f) || (*first == '#') ) {
-      printf("1\n");
       sprintf(third, "%s", second);
       sprintf(second, "%s", first);
       sprintf(first, "%s", name);
@@ -1132,7 +1212,6 @@ void ranking (SDL_Surface *screen, SDL_Surface *background, int score_player, in
       
       
     } else if ( (score_player > sc_s) || (*second == '#')  ) {
-      printf("2\n");
       sprintf(third, "%s", second);
       sprintf(second, "%s", name);
       strcat (second, "\n");
@@ -1140,7 +1219,6 @@ void ranking (SDL_Surface *screen, SDL_Surface *background, int score_player, in
       sc_s = score_player;
       
     } else if ( (score_player > sc_t) ||(*third == '#')  ) {
-      printf("3\n");
       sprintf(third, "%s", name);
       strcat (third, "\n");
       sc_t = score_player;
@@ -1232,6 +1310,7 @@ int nb_random () {
 /*add an element in an array and initialize*/
 void add (object_breakout *tab, int *n, int cx, int cy, SDL_Surface *screen, int type_bonus){
   tab[*n] = init_object (BONUS, cx, cy, screen, type_bonus);
+  *n += 1;
 }
 
 /*delete an element in an array*/
@@ -1245,13 +1324,26 @@ void del (object_breakout *tab, int *n, int cur){
 
 /* Handle the POWER */
 /*reduce the size of the platform*/
-void power (object_breakout *reduc, int *n, SDL_Surface *screen, int cx, int cy)
+void power (object_breakout *power, int *n, SDL_Surface *screen, int cx, int cy)
 {
-  int lucky = nb_random();
-  //if (lucky == REDUC){
-    add(reduc, n, cx, cy, screen,REDUC);
-    *n = *n + 1;
-    //}
+  /*int lucky = nb_random();
+  if (lucky == REDUC){
+    add(power, n, cx, cy, screen,REDUC);
+    }else if (lucky == GROW){
+    add(power, n, cx, cy, screen,GROW);
+    } else if (luck == LOST) {
+        add (power, n, cx, cy, screen, LOST);
+    } else if (luck == LIFE) { 
+        add (power, n, cx, cy, screen, LIFE);
+    } else if (luck == SCORE) { 
+        add (power, n, cx, cy, screen, SCORE);
+    } else if (luck == MULTI) { 
+        add (power, n, cx, cy, screen, MULTI);
+     } else if (luck == MIN) { 
+        add (power, n, cx, cy, screen, MIN);
+     } else if (luck == SLOW_BALL) { */
+        add (power, n, cx, cy, screen, SLOW_BALL);
+//      } 
 }
 
 
@@ -1259,47 +1351,94 @@ void power (object_breakout *reduc, int *n, SDL_Surface *screen, int cx, int cy)
 void move_power (object_breakout *reduc, int *n) {
   int i;
   for(i=0;i<*n;i++){
-    if (reduc[i].print) {
+    if (!reduc[i].activate) {
       reduc[i].y = reduc[i].y + reduc[i].speed_y;
       reduc[i].position.x = reduc[i].x;
       reduc[i].position.y = reduc[i].y;
       if (reduc[i].y > SCREEN_HEIGHT - reduc[i].height) {
 	del(reduc,n,i);
-	}
+      }
     }
   }
 }
 
 
 /*******  handle the collide between bonus and platform  *************/
-void collide_power (object_breakout *platform, object_breakout *power,SDL_Surface *screen, int *n){
+void collide_power (object_breakout *platform, object_breakout *power, 
+                    object_breakout *ball, int *nb_ball, SDL_Surface *screen, int *n, int *gameover){
   float x=0 ,y=0;
-  int i;
+  int i, k;
   for (i=0; i<*n; i++){
-    if (power[i].t_bonus == REDUC){
+    if (power[i].activate == false) {
       if (collide_precise(&power[i], platform, screen->format,&x,&y)){
-	platform -> width = 32;
-	platform -> sprite = load("LittlePlatform.bmp");
-	set_colorkey(screen, 255, 0, 255, platform->sprite);
-	power[i].counter = TIME_REDUCE;
-	power[i].print = false;
+	power[i].activate = true;
+	if (power[i].t_bonus == REDUC){
+	  platform -> width = 32;
+	  platform -> sprite = load("LittlePlatform.bmp");
+	  set_colorkey(screen, 255, 0, 255, platform->sprite);
+	  power[i].counter = TIME_REDUCE;
+	}else if (power[i].t_bonus == GROW){
+	    platform -> width = 128;
+	    platform->picture.w = platform->width;
+	    printf("platform -> width = %d \n",platform -> width);
+	    platform -> sprite = load("BigPlatform.bmp");
+	    set_colorkey(screen, 255, 0, 255, platform->sprite);
+	    power[i].counter = TIME_GROW;
+	} else if (power[i].t_bonus == LOST) {
+	    *gameover = 1;
+	} else if (power[i].t_bonus == LIFE) {
+	    ball[0].life += 1;
+	    del (power, n, i);
+	} else if (power[i].t_bonus == SCORE) {
+	    ball[0].score += 10;
+	    del (power, n, i);
+	} else if (power[i].t_bonus == MULTI) {
+ 	    if (*nb_ball < 2) {
+	      ball[*nb_ball] = init_object (BALL, ball[0].x, ball[0].y, screen, -1);
+	      ball[*nb_ball].speed_x = ball[0].speed_x;
+	      ball[*nb_ball].speed_y = -ball[0].speed_y;
+	      ball[*nb_ball].life = ball[0].life;
+	      ball[*nb_ball].score = 0;
+	      *nb_ball += 1;
+	    }
+	    del (power, n, i);
+	} else if (power[i].t_bonus == MIN) {
+	  ball[0].score -= 5;
+	  del (power, n, i);
+	} else if (power[i].t_bonus == SLOW_BALL) {
+	  power[i].counter = TIME_SLOW_BALL;
+	  for (k=0; k<*nb_ball; k++) {
+	    ball[k].activate = true;
+	    
+	  }
+	}
       }
     }
   } 
 }
 
 /*Handle the bonus time*/
-void power_time (object_breakout *platform, object_breakout *tab, int *n, SDL_Surface *screen){
-  int i;
+void power_time (object_breakout *platform, object_breakout *ball, int nb_ball, object_breakout *tab, int *n, SDL_Surface *screen){
+  int i, k; 
   for (i=0; i<*n; i++) {
-    if (! tab[i].print){
+  
+    if (tab[i].activate){
+      printf("oj\n");
       tab[i].counter = tab[i].counter - 1;
+         printf ("counter %d, active %d\n", tab[i].counter, tab[i].activate);
       if (tab[i].counter <= 0){
-	if (tab[i].t_bonus == REDUC){
+	if ((tab[i].t_bonus == REDUC) || (tab[i].t_bonus == GROW)){
 	  del(&tab[i],n,i);
 	  platform -> width = 64;
 	  platform -> sprite = load("NormalPlatform.bmp");
 	  set_colorkey(screen, 255, 0, 255, platform->sprite);
+	}
+	if (tab[i].t_bonus == SLOW_BALL) {
+	  printf("in\n");
+	  del(&tab[i],n,i);
+	  for (k=0; k<nb_ball; k++) {
+	    ball[k].activate = false;
+	  }
 	}
       }
     }
