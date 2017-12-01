@@ -71,7 +71,7 @@
 #define TIME_GROW  50
 #define TIME_BOUNCE  100
 #define TIME_CROSS  100000000
-#define TIME_SLOW_BALL 100
+#define TIME_SLOW_BALL 1000
 #define TIME_SPEED_BALL 100
 #define TIME_SLOW_PLAT 200
 #define TIME_SPEED_PLAT 2000000
@@ -82,6 +82,7 @@
 
 #define ALEA 20
 
+#define NEXT_LEVEL 500
 
 /********* Définition de la structure ********************/
 
@@ -169,7 +170,9 @@ object_breakout init_object (int type, float x_act, float y_act, SDL_Surface *sc
 void print_tab (object_breakout *table, int nb,  SDL_Surface *screen);
 
 /********  make move the ball ************/
-void move_ball (object_breakout *ball, int *nb, object_breakout *platform, SDL_Surface *screen, bool *throw, int *nb_power);
+void move_ball (object_breakout *ball, int *nb, object_breakout *platform, 
+                object_breakout *power, int *nb_power, SDL_Surface *screen, 
+                 bool *throw);
 
 /* Collide between 2 objects */
 bool collide(object_breakout *sprite1, object_breakout *sprite2);

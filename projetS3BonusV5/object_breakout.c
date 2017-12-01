@@ -397,8 +397,7 @@ char** read_data(FILE *file, int  row, int col)
     {
       printf("Impossible d'ouvrir le fichier breakout_data.txt");
     } 
-  printf("\n");
-  return T;
+    return T;
 }
 
 
@@ -520,7 +519,7 @@ object_breakout init_object (int type, float x_act, float y_act, SDL_Surface *sc
   if (type == BONUS){
     object.t_bonus = type_bonus;
     object.activate = false;
-    object.speed_y = 0.2;
+    object.speed_y = 2;
     object.width = 17;
     object.height = 17;
     object.n_frame = 1;
@@ -589,9 +588,11 @@ void print_tab (object_breakout *table, int nb, SDL_Surface *screen) {
 
 
 /********  make move the ball ************/
-void move_ball (object_breakout *ball, int *nb, object_breakout *platform, SDL_Surface *screen, bool *throw, int *nb_power){
+void move_ball (object_breakout *ball, int *nb, object_breakout *platform, 
+                object_breakout *power, int *nb_power, SDL_Surface *screen, 
+                bool *throw){
   int i;
-//   printf("speed x %f, speed y %f\n", ball[i].speed_x, ball[i].speed_y);
+  bool fall = false;
   for (i=0; i<*nb; i++) {
     if (ball[i].activate) {
       ball[i].x += ball[i].speed_x / 5;
@@ -635,15 +636,21 @@ void move_ball (object_breakout *ball, int *nb, object_breakout *platform, SDL_S
 	  
 	  ball[i].life = life - 1;
 	  ball[i].score = score;
+          fall = true;
 	} else {
 	  del (ball, nb, i);
 	  ball[0].score += score;
 	}
       } else {
 	rebond(&ball[i], 1 , true);
-	*nb_power = 0;
       }
     }
+  }
+  if (fall) {
+      int nb_power_replace = *nb_power;
+      for (i=0; i<nb_power_replace; i++) {
+          del (power, nb_power, i);
+      }
   }
 }
 
@@ -1005,7 +1012,7 @@ void print_text (const char *text, int val, SDL_Surface *screen, int pos_x, int 
       SDL_Rect position_text_val;
       sprintf (text_val, "%d", val);
       sprite_text_val = TTF_RenderUTF8_Solid (font, text_val, color);
-      position_text_val.x = pos_x + 100;
+      position_text_val.x = pos_x + 110;
       position_text_val.y = pos_y;
       SDL_BlitSurface (sprite_text_val, NULL, screen, &position_text_val);
       free(sprite_text_val);
@@ -1327,20 +1334,18 @@ void add (object_breakout *tab, int *n, int cx, int cy, SDL_Surface *screen, int
 
 /*delete an element in an array*/
 void del (object_breakout *tab, int *n, int cur){
-  printf("av n = %d\n", *n);
+  SDL_FreeSurface(tab[cur].sprite);
   for (int j = cur; j < *n-1; j++){
-    SDL_FreeSurface(tab[j].sprite);
     tab[j] = tab[j+1];
   }
   *n -= 1;
-  printf("ap n = %d\n", *n);
 }
 
 /* Handle the POWER */
 /*reduce the size of the platform*/
 void power (object_breakout *power, int *n, SDL_Surface *screen, int cx, int cy)
 {
-  int lucky = CROSS;// nb_random();
+  int lucky = MULTI;// nb_random();
   if (*n < NB_BONUS_IN_SAME_TIME) {
     if (lucky == REDUC){
       add(power, n, cx, cy, screen,REDUC);
@@ -1419,7 +1424,7 @@ void collide_power (object_breakout *platform, object_breakout *power,
 	    ball[0].score += 10;
 	    del (power, n, i);
 	} else if (power[i].t_bonus == MULTI) {
- 	    if (*nb_ball < 2) {
+ 	    if (*nb_ball < MAX_SIZE) {
 	      ball[*nb_ball] = init_object (BALL, ball[0].x, ball[0].y, screen, -1);
 	      ball[*nb_ball].speed_x = ball[0].speed_x;
 	      ball[*nb_ball].speed_y = -ball[0].speed_y;

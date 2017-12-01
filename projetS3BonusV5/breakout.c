@@ -32,6 +32,7 @@ int main(int argc, char* argv[])
     //to open the data file
     file = fopen("breakout_data.txt","r");  
     
+    int counter_level = 0;
     int life = 3;
     int score = 0;
     
@@ -45,7 +46,17 @@ int main(int argc, char* argv[])
      
     while ( !exit ) 
     {
-
+        counter_level += 1;
+        int counter_next_level = NEXT_LEVEL;
+        while (counter_next_level > 0) {
+            printf("count = %d\n'", counter_next_level);
+            counter_next_level -= 1;
+            draw_background(background, screen);
+             print_text ("LEVEL : ", -1, screen, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 3, 90, 1);
+            print_text ("", counter_level, screen, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3, 90, 1);           
+             SDL_UpdateRect(screen, 0, 0, 0, 0);
+        }
+        
       /* initialize and set the platform position in the middle of the window */
       object_breakout platform = init_object (PLAT,
 				  (SCREEN_WIDTH - PLATFORM_WIDTH) / 2, 
@@ -105,6 +116,7 @@ int main(int argc, char* argv[])
     
       while (!gameover && !finish_level)
       {
+          object_breakout tab_bonus [NB_BONUS_IN_SAME_TIME];
 	//look if the level is finished  
 	finish_level = (nbI == 0) && (nbII == 0) && (nbIII == 0) && (nbV == 0) && (nbVI == 0) && (nbVII == 0); 
 	gameover = ball[0].life <= 0;
@@ -128,14 +140,14 @@ int main(int argc, char* argv[])
 	    ball[0].position.x = ball[0].x;
 	} 
 	else {
-	    move_ball (ball, &nb_ball, &platform, screen, &throw, &nb_bonus);
+	    move_ball (ball, &nb_ball, &platform, tab_bonus, &nb_bonus, screen, &throw);
 	}
 
 	/* collide with edges of screen */
 	collide_screen (&platform);
 	    
 	/* see if the content of the table is in collide with the ball */
-	object_breakout tab_bonus [NB_BONUS_IN_SAME_TIME];
+	
 	float cx = 0;
 	float cy = 0;
 	bool blit_bonus = false;
@@ -165,12 +177,10 @@ int main(int argc, char* argv[])
 	print_tab(tab_brick[5], nbVI, screen);
         print_tab(tab_brick[6], nbVII, screen);
 	print_object (&platform, screen);
-	printf("main n=%d\n", nb_bonus);
 	for (i=0; i<nb_ball; i++) {
 	  print_object (&ball[i], screen);
 	}
 	for (i=0; i<nb_bonus; i++) {
-	  printf ("i = %d\n", i);
 	  if (!tab_bonus[i].activate){
 	    print_object(&tab_bonus[i], screen);
 	  }
@@ -184,6 +194,7 @@ int main(int argc, char* argv[])
 	  score += ball[i].score;
 	}
 	print_text ("Score : ", score, screen, 0, 0, 20, 0);
+        print_text  ("Level : ", counter_level, screen, 500, 0, 32, 0);
 
 	/* update the screen */
   	SDL_UpdateRect(screen, 0, 0, 0, 0);
