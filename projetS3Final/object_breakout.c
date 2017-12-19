@@ -1883,7 +1883,7 @@ void rebond (object_breakout *ball, int side, bool collide_screen)
 /*reduce the size of the platform*/
 void power (object_breakout *power, int *n, SDL_Surface *screen, int cx, int cy)
 {
-    int lucky = GROW;// nb_random();
+    int lucky = nb_random();
     /*if the table is not complete*/
     if (*n < NB_BONUS_IN_SAME_TIME) {
         if (lucky == REDUC){
